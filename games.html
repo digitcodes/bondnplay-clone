@@ -1,10 +1,79 @@
-<section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Games - BondnPlay</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+  />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f8f8;
+      color: #333;
+      margin: 0;
+      padding: 1rem;
+      text-align: center;
+    }
+    h2 {
+      color: #222;
+      margin-top: 1rem;
+    }
+    #board {
+      width: 350px;
+      margin: 2rem auto;
+    }
+    #status {
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
   <h2>Play Chess</h2>
   <p>Test your skills or challenge your family in a classic game of chess.</p>
-  <iframe 
-    src="https://lichess.org/embed?theme=auto&bg=auto" 
-    width="600" 
-    height="400" 
-    frameborder="0">
-  </iframe>
-</section>
+
+  <div id="board"></div>
+  <div id="status">White to move</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.0/chess.min.js"></script>
+  <script src="https://unpkg.com/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+  <script>
+    const game = new Chess();
+
+    const board = Chessboard("board", {
+      draggable: true,
+      position: "start",
+      onDrop: function (source, target) {
+        const move = game.move({
+          from: source,
+          to: target,
+          promotion: "q", // promote to queen automatically
+        });
+        if (move === null) return "snapback";
+        updateStatus();
+      },
+    });
+
+    function updateStatus() {
+      let status = "";
+      let moveColor = game.turn() === "w" ? "White" : "Black";
+
+      if (game.inCheckmate()) {
+        status = `Game over, ${moveColor} is in checkmate.`;
+      } else if (game.inDraw()) {
+        status = "Game over, drawn position.";
+      } else {
+        status = `${moveColor} to move`;
+        if (game.inCheck()) {
+          status += ` — ${moveColor} is in check!`;
+        }
+      }
+
+      document.getElementById("status").textContent = status;
+    }
+  </script>
+</body>
+</html>
